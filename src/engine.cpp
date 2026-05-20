@@ -15,7 +15,7 @@ void init_weights(const map<string, torch::Tensor>& w){
     };
 
     g_weights.embed_tokens = ptr("model.embed_tokens.weight");
-    g_weights.final_norm = ptr("model.final_norm.weight");
+    g_weights.final_norm = ptr("model.norm.weight");
 
     for (int i=0; i<24; i++){
         string p = "model.layers."+to_string(i) + ".";
