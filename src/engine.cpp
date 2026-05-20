@@ -41,5 +41,5 @@ torch::Tensor forward(torch::Tensor merged_embeds){
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m){
     m.def("init_weights", &init_weights, "Initialize weight pointers");
-    m.def("forward", &forward, "Forward pass");
+    m.def("forward", (torch::Tensor(*)(torch::Tensor))&forward, "Forward pass");
 }

@@ -3,3 +3,4 @@ __pycache__/
 *.o
 build/
 .ipynb_checkpoints/
+.venv
