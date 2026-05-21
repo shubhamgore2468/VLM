@@ -45,12 +45,12 @@ torch::Tensor rmsnorm(torch::Tensor x, torch::Tensor weight, float eps){
     return y;
 }
 
-torch::Tensor forward(torch::Tensor merged_embeds){
+torch::Tensor forward_pass(torch::Tensor merged_embeds){
     return merged_embeds;
 }
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m){
     m.def("init_weights", &init_weights, "Initialize weight pointers");
     m.def("rmsnorm", &rmsnorm, "RMSNorm");
-    m.def("forward", &forward, "Forward pass");
+    m.def("forward", &forward_pass, "Forward pass");
 }

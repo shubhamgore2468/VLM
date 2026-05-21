@@ -2,6 +2,8 @@ import torch
 from torch.utils.cpp_extension import load
 from load_weights import load_qwen_weights
 
+REF_DIR = "/kaggle/input/datasets/foxtrot22/vlm-reference-tensors"
+
 engine = load(
     name="vlm_engine",
     sources=[
@@ -14,7 +16,12 @@ engine = load(
 weights = load_qwen_weights()
 engine.init_weights(weights)
 
-x = torch.load("/kaggle/input/datasets/foxtrot22/vlm-reference-tensors/merged_embeds_0.pt").to("cuda")
-out = engine.forward(x)
+x = torch.load(f"{REF_DIR}/norm_in_0.pt").cuda().squeeze(0)
+expected = torch.load(f"{REF_DIR}/norm_out_0.pt").cuda().squeeze(0)
+norm_weight = weights["model.layers.0.input_layernorm.weight"]
 
-print(f"out shape: {out.shape}, matches input: {torch.equal(out, x)}")
+actual = engine.rmsnorm(x, norm_weight, 1e-6)
+
+max_diff = (actual - expected).abs().max().item()
+print(f"max diff: {max_diff:.2e}")
+print(f"allclose (atol=1e-4): {torch.allclose(actual, expected, atol=1e-4)}")
