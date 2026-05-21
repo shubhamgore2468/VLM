@@ -36,6 +36,7 @@ void init_weights(const map<string, torch::Tensor>& w){
 }
 
 extern void rmsnorm_cuda(const float* x, const float* weight, float* y, int seq_len, int hidden_size, float eps);
+extern void matmul_cuda(const float* x, const float* w, const float* bias, float* y, int M, int N, int K);
 
 torch::Tensor rmsnorm(torch::Tensor x, torch::Tensor weight, float eps){
     auto y = torch::empty_like(x);
@@ -49,8 +50,20 @@ torch::Tensor forward_pass(torch::Tensor merged_embeds){
     return merged_embeds;
 }
 
+torch::Tensor matmul(torch::Tensor x, torch::Tensor W, torch::optional<torch::Tensor> bias) {
+    int M = x.size(-2);
+    int K = x.size(-1);
+    int N = W.size(0);
+    auto y = torch::empty({M, N}, x.options());
+    const float* bias_ptr = bias.has_value() ? bias->data_ptr<float>() : nullptr;
+    matmul_cuda(x.data_ptr<float>(), W.data_ptr<float>(), bias_ptr,
+                y.data_ptr<float>(), M, N, K);
+    return y;
+}
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m){
     m.def("init_weights", &init_weights, "Initialize weight pointers");
     m.def("rmsnorm", &rmsnorm, "RMSNorm");
+    m.def("matmul", &matmul, "Matmul", pybind11::arg("x"), pybind11::arg("W"), pybind11::arg("bias") = pybind11::none());
     m.def("forward", &forward_pass, "Forward pass");
 }
