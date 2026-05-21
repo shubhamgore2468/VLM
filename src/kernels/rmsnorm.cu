@@ -114,7 +114,7 @@ __global__ void rmsnorm_kernel_v1(
     }
 }
 
-void rmsnorm(
+void rmsnorm_cuda(
     const float* x,
     const float* weight,
     float* y,

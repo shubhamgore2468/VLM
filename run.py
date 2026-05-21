@@ -6,7 +6,7 @@ engine = load(
     name="vlm_engine",
     sources=[
         "src/engine.cpp",
-        "src/kernels.cu",
+        "src/kernels/rmsnorm.cu",
     ],
     verbose=True,
 )

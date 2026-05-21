@@ -37,7 +37,7 @@ void init_weights(const map<string, torch::Tensor>& w){
 
 extern void rmsnorm_cuda(const float* x, const float* weight, float* y, int seq_len, int hidden_size, float eps);
 
-torch::Tensor rmsnorm(torch::Tensor x, torch::Tensor::Tensor weight, float eps){
+torch::Tensor rmsnorm(torch::Tensor x, torch::Tensor weight, float eps){
     auto y = torch::empty_like(x);
     int seq_len = x.size(-2);
     int hidden_size = x.size(-1);
@@ -51,6 +51,6 @@ torch::Tensor forward(torch::Tensor merged_embeds){
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m){
     m.def("init_weights", &init_weights, "Initialize weight pointers");
-    m.def("rmsnorm", &rmsnorm, "RMSNorm")
-    m.def("forward", (torch::Tensor(*)(torch::Tensor))&forward, "Forward pass");
+    m.def("rmsnorm", &rmsnorm, "RMSNorm");
+    m.def("forward", &forward, "Forward pass");
 }
